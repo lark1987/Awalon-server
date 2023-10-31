@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.io Example</title>
+</head>
+<body>
+  <h1>Socket.io Example</h1>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  socket.on('connect', () => {
+    console.log('已連接到伺服器');
+  });
+  socket.on('disconnect', () => {
+    console.log('已斷開與伺服器的連接');
+  });
+</script>
+</html>
