@@ -16,28 +16,29 @@ app.get('/', (req, res) => {
 });
 
 
+// io.disconnectSockets();
 
 
-const roomData = {};
+const customNamespace = io.of('/123456');
 
-io.on("connection", (socket) => {
+customNamespace.on('connection', async(socket) => {
 
-  socket.on('joinRoom', (roomName) => {
-    socket.join(roomName);
-    io.to(roomName).emit('roomNotification', `使用者進入了房間: ${roomName}`);
+  const sockets = await io.of("/123456").fetchSockets();
+  sockets.forEach(item=>{console.log(item.id)})
 
+  socket.on('disconnect', async() => {
+    const sockets = await io.of("/123456").fetchSockets();
+    sockets.forEach(item=>{console.log(item.id)})
   });
 
-  socket.on('leaveRoom', (roomName) => {
-    socket.leave(roomName);
-    io.to(roomName).emit('roomNotification', `使用者離開了房間: ${roomName}`);
-  });
+})
 
-  socket.on('disconnect', () => {
-    console.log('客戶端斷開連線');
-  });
 
-});
+
+
+
+
+
 
 
 server.listen(4000, () => {
