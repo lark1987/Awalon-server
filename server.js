@@ -16,7 +16,26 @@ app.get('/', (req, res) => {
 });
 
 
+
+
+const roomData = {};
+
 io.on("connection", (socket) => {
+
+  socket.on('joinRoom', (roomName) => {
+    socket.join(roomName);
+    io.to(roomName).emit('roomNotification', `使用者進入了房間: ${roomName}`);
+
+  });
+
+  socket.on('leaveRoom', (roomName) => {
+    socket.leave(roomName);
+    io.to(roomName).emit('roomNotification', `使用者離開了房間: ${roomName}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('客戶端斷開連線');
+  });
 
 });
 
