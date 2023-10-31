@@ -15,29 +15,27 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
+let spaceId=''
 
-// io.disconnectSockets();
+io.on('connection', (socket) => {
+  socket.on('spaceId', (msg) => {
+    spaceId=msg
+  });
+});
 
+const gameNamespace = io.of(`/${spaceId}`);
+gameNamespace.on('connection', async(gameSocket) => {
 
-const customNamespace = io.of('/123456');
-
-customNamespace.on('connection', async(socket) => {
-
-  const sockets = await io.of("/123456").fetchSockets();
+  const sockets = await gameNamespace.fetchSockets();
   sockets.forEach(item=>{console.log(item.id)})
 
-  socket.on('disconnect', async() => {
-    const sockets = await io.of("/123456").fetchSockets();
+  gameSocket.on('disconnect', async() => {
+    const sockets = await gameNamespace.fetchSockets();
     sockets.forEach(item=>{console.log(item.id)})
+
+
   });
-
-})
-
-
-
-
-
-
+});
 
 
 
