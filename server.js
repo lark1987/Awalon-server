@@ -16,8 +16,6 @@ app.get('/', (req, res) => {
 });
 
 const users = {};
-const goodPeople = [];
-const badPeople = [];
 
 io.on('connection', (socket) => {
 
@@ -32,8 +30,8 @@ io.on('connection', (socket) => {
 
       // 此區為連線 Namespace，處理線上人數。
 
-      roomSocket.on('setUserName', (userName) => {
-        users[roomSocket.id]={'spaceId':spaceId,'userName':userName,}
+      roomSocket.on('setUserName', (userName,userId) => {
+        users[roomSocket.id]={'spaceId':spaceId,'userName':userName,'userId':userId}
       })
 
       roomSocket.on('disconnect',() => {
