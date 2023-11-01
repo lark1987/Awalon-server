@@ -15,24 +15,28 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-let spaceId=''
+const users = {};
 
 io.on('connection', (socket) => {
-  socket.on('spaceId', (msg) => {
-    spaceId=msg
-  });
-});
 
-const gameNamespace = io.of(`/${spaceId}`);
-gameNamespace.on('connection', async(gameSocket) => {
+  socket.on('spaceId', (spaceId) => {
+    console.log('我是spaceId',spaceId)
+    socket.emit('answer','收到spaceId了！')
 
-  const sockets = await gameNamespace.fetchSockets();
-  sockets.forEach(item=>{console.log(item.id)})
+    const myNamespace = io.of(`/${spaceId}`);
+    myNamespace.on('connection', (roomSocket) => {
 
-  gameSocket.on('disconnect', async() => {
-    const sockets = await gameNamespace.fetchSockets();
-    sockets.forEach(item=>{console.log(item.id)})
+      roomSocket.on('setUserName', (userName) => {
+        users[roomSocket.id]={'spaceId':spaceId,'userName':userName,}
+        console.log('我是users',users)
+      })
 
+      roomSocket.on('disconnect',() => {
+        delete users[roomSocket.id]
+        console.log('我是users',users)
+      })
+
+    });
 
   });
 });
