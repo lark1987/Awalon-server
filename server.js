@@ -16,8 +16,12 @@ app.get('/', (req, res) => {
 });
 
 const users = {};
+const goodPeople = [];
+const badPeople = [];
 
 io.on('connection', (socket) => {
+
+  // 此區為連線 socket 取得 spaceId
 
   socket.on('spaceId', (spaceId) => {
     console.log('我是spaceId',spaceId)
@@ -26,15 +30,36 @@ io.on('connection', (socket) => {
     const myNamespace = io.of(`/${spaceId}`);
     myNamespace.on('connection', (roomSocket) => {
 
+      // 此區為連線 Namespace，處理線上人數。
+
       roomSocket.on('setUserName', (userName) => {
         users[roomSocket.id]={'spaceId':spaceId,'userName':userName,}
-        console.log('我是users',users)
       })
 
       roomSocket.on('disconnect',() => {
         delete users[roomSocket.id]
-        console.log('我是users',users)
       })
+
+      roomSocket.on('getOnlineUsers',() => {
+        roomSocket.emit('onlineUsers',users)
+        console.log('我是getOnlineUsers',users)
+      })
+
+
+      // 此區為區分好人壞人的 room
+
+      roomSocket.on('joinGood', () => {
+        roomSocket.join('goodPeople');
+      });
+    
+      roomSocket.on('joinBad', () => {
+        roomSocket.join('badPeople');
+      });
+
+      roomSocket.on('checkGroup', () => {
+        myNamespace.to('goodPeople').emit('groupMessage','歡迎加入好人陣營');
+        myNamespace.to('badPeople').emit('groupMessage','歡迎加入壞人陣營');
+      });
 
     });
 
