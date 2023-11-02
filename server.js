@@ -39,7 +39,8 @@ io.on('connection', (socket) => {
       })
 
       roomSocket.on('getOnlineUsers',() => {
-        roomSocket.emit('onlineUsers',users)
+        const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
+        roomSocket.emit('onlineUsers',roomUsers)
         console.log('我是getOnlineUsers',users)
       })
 
