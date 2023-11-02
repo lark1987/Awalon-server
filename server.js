@@ -36,11 +36,13 @@ io.on('connection', (socket) => {
 
       roomSocket.on('disconnect',() => {
         delete users[roomSocket.id]
+        const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
+        myNamespace.emit('onlineUsers',roomUsers)
       })
 
       roomSocket.on('getOnlineUsers',() => {
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
-        roomSocket.emit('onlineUsers',roomUsers)
+        myNamespace.emit('onlineUsers',roomUsers)
         console.log('我是getOnlineUsers',users)
       })
 
