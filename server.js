@@ -49,25 +49,19 @@ io.on('connection', (socket) => {
 
       // 此區為 產生角色按鈕 > 區分好人壞人的 room
 
-      roomSocket.on('getGameStart', (newList) => {
-        myNamespace.emit('gameStart',newList)
+      roomSocket.on('getRoleButton', (newList) => {
+        myNamespace.emit('roleButton',newList)
       });
 
       roomSocket.on('joinGood', () => {
         roomSocket.join('goodPeople');
+        myNamespace.to('goodPeople').emit('groupMessage','歡迎加入好人陣營');
       });
     
       roomSocket.on('joinBad', () => {
         roomSocket.join('badPeople');
-      });
-
-      roomSocket.on('checkGroup', () => {
-        myNamespace.to('goodPeople').emit('groupMessage','歡迎加入好人陣營');
         myNamespace.to('badPeople').emit('groupMessage','歡迎加入壞人陣營');
       });
-
-
-
 
     });
 
