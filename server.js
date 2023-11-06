@@ -47,14 +47,12 @@ io.on('connection', (socket) => {
       roomSocket.on('disconnect',() => {
         delete users[roomSocket.id]
         delete goodPeople[roomSocket.id]
+        delete badPeople[roomSocket.id]
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
       })
 
-
-
-
-      // 此區為 產生角色按鈕 > 好人壞人 room
+      // 此區為 產生角色按鈕 > 好人壞人梅林 room > 通知壞人名單
 
       roomSocket.on('getRoleButton', (newList) => {
         myNamespace.emit('roleButton',newList)
@@ -72,11 +70,19 @@ io.on('connection', (socket) => {
         badPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName}
       });
 
-      // 進度到這裡，要把梅林抓出來
-
-      roomSocket.on('getBadPeopleList', () => {
-        myNamespace.to('badPeople').emit('badPeopleList',badPeople);
+      roomSocket.on('joinMerlin', (userName) => {
+        roomSocket.join('merlin');
+        myNamespace.to('merlin').emit('groupMessage','歡迎加入好人陣營，你是梅林！');
+        goodPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName}
       });
+
+      roomSocket.on('getBadPeopleList', async() => {
+        const badName = Object.values(badPeople).map(item => item.userName);
+        myNamespace.in('merlin').emit('badPeopleList',badName);
+        myNamespace.in('badPeople').emit('badPeopleList',badName);
+      });
+
+
 
       
 
@@ -100,12 +106,5 @@ server.listen(4000, () => {
 
 
 
-
-        // for (const socket of sockets) {
-        //   console.log(socket.id);
-        // }
-
-        // const sockets = await myNamespace.in("goodPeople").fetchSockets();
-        // const randomIndex = Math.floor(Math.random() * sockets.length);
-        // const randomSocket = sockets[randomIndex].id;
-        // console.log(randomSocket)
+        // const keys = Object.keys(goodPeople);
+        // const roleMerlinKey = keys[Math.floor(Math.random() * keys.length)];
