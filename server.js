@@ -36,6 +36,7 @@ io.on('connection', (socket) => {
 
       roomSocket.on('setUserName', (userName,userId) => {
         users[roomSocket.id]={'spaceId':spaceId,'userName':userName,'userId':userId}
+        roomSocket.join(userId);
       })
 
       roomSocket.on('getOnlineUsers',() => {
@@ -76,20 +77,30 @@ io.on('connection', (socket) => {
         goodPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName}
       });
 
-      roomSocket.on('getBadPeopleList', async() => {
+      roomSocket.on('getBadPeopleList', () => {
         const badName = Object.values(badPeople).map(item => item.userName);
         myNamespace.in('merlin').emit('badPeopleList',badName);
         myNamespace.in('badPeople').emit('badPeopleList',badName);
       });
 
+      // 進度到這 ~ 抓到要出征的 socket emit
+
+      roomSocket.on('getFightButton', async(players) => {
+
+        const roomSocketIds = [];
+        players.forEach((player) => {
+          const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
+          const user = Object.values(roomUsers).find(user => user.userName === player);
+          const userId = user.userId;
+          if (userId) {roomSocketIds.push(userId);}
+        });
+        roomSocketIds.forEach(socketId => {
+          myNamespace.in(socketId).emit('fightButton', '霸托霸托');
+        });
+      });
 
 
-      
 
-
-
-
-      
 
       
 
@@ -103,8 +114,3 @@ io.on('connection', (socket) => {
 server.listen(4000, () => {
   console.log('伺服器運行在 http://localhost:4000');
 });
-
-
-
-        // const keys = Object.keys(goodPeople);
-        // const roleMerlinKey = keys[Math.floor(Math.random() * keys.length)];
