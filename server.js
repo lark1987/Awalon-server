@@ -21,6 +21,7 @@ const goodPeople = {};
 const badPeople = {}
 let vote = {}
 let misson = {}
+let goGame = {}
 
 
 io.on('connection', (socket) => {
@@ -47,15 +48,7 @@ io.on('connection', (socket) => {
         console.log('我是getOnlineUsers',users)
       })
 
-      roomSocket.on('disconnect',() => {
-        delete users[roomSocket.id]
-        delete goodPeople[roomSocket.id]
-        delete badPeople[roomSocket.id]
-        vote = {}
-        misson = {};
-        const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
-        myNamespace.emit('onlineUsers',roomUsers)
-      })
+
 
       // 此區為 產生角色按鈕 > 好人壞人梅林 room > 通知壞人名單
 
@@ -112,6 +105,25 @@ io.on('connection', (socket) => {
         vote[userId]={userName,answer}
         myNamespace.emit('getVote',vote)
       });
+
+      roomSocket.on('goGame', (userId,userName) => {
+        goGame[userId]=userName
+        myNamespace.emit('goGame',goGame)
+      });
+
+
+
+
+      roomSocket.on('disconnect',() => {
+        delete users[roomSocket.id]
+        delete goodPeople[roomSocket.id]
+        delete badPeople[roomSocket.id]
+        vote = {}
+        misson = {}
+        goGame = {}
+        const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
+        myNamespace.emit('onlineUsers',roomUsers)
+      })
 
 
 
