@@ -19,6 +19,8 @@ app.get('/', (req, res) => {
 const users = {};
 const goodPeople = {};
 const badPeople = {}
+let vote = {}
+let misson = {}
 
 
 io.on('connection', (socket) => {
@@ -49,6 +51,8 @@ io.on('connection', (socket) => {
         delete users[roomSocket.id]
         delete goodPeople[roomSocket.id]
         delete badPeople[roomSocket.id]
+        vote = {}
+        misson = {};
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
       })
@@ -83,7 +87,7 @@ io.on('connection', (socket) => {
         myNamespace.in('badPeople').emit('badPeopleList',badName);
       });
 
-      // 進度到這 ~ 抓到要出征的 socket emit
+      // 此區為 出任務區：任務人選、任務成敗、同意票選
 
       roomSocket.on('getFightButton', async(players) => {
 
@@ -98,6 +102,17 @@ io.on('connection', (socket) => {
           myNamespace.in(socketId).emit('fightButton', '霸托霸托');
         });
       });
+
+      roomSocket.on('getMissonResult', (userId,answer) => {
+        misson[userId]=answer
+        myNamespace.emit('getMissonResult',misson)
+      });
+
+      roomSocket.on('getVote', (userId,userName,answer) => {
+        vote[userId]={userName,answer}
+        myNamespace.emit('getVote',vote)
+      });
+
 
 
 
