@@ -22,6 +22,7 @@ const badPeople = {}
 let vote = {}
 let misson = {}
 let goGame = {}
+let gameLeaderCount = 0
 
 
 io.on('connection', (socket) => {
@@ -47,8 +48,6 @@ io.on('connection', (socket) => {
         myNamespace.emit('onlineUsers',roomUsers)
         console.log('我是getOnlineUsers',users)
       })
-
-
 
       // 此區為 產生角色按鈕 > 好人壞人梅林 room > 通知壞人名單
 
@@ -111,6 +110,28 @@ io.on('connection', (socket) => {
         myNamespace.emit('goGame',goGame)
       });
 
+      roomSocket.on('leaderList', (shuffleList) => {
+        myNamespace.emit('leaderList',shuffleList)
+
+        const leaderName = shuffleList[0]
+        console.log(leaderName)
+
+        const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
+        const leader = Object.values(roomUsers).find(user => user.userName === leaderName);
+        const leaderId = leader.userId;
+
+        myNamespace.in(leaderId).emit('leaderAction', '你是本局隊長喔');
+
+      });
+
+
+
+
+
+
+
+
+
 
 
 
@@ -123,13 +144,8 @@ io.on('connection', (socket) => {
         goGame = {}
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
+        myNamespace.emit('goGame',goGame)
       })
-
-
-
-
-
-      
 
     });
 
