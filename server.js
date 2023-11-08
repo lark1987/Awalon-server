@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
     const myNamespace = io.of(`/${spaceId}`);
     myNamespace.on('connection', (roomSocket) => {
 
-      // 此區處理 線上人數、離線清除。
+      // 此區處理 人員登記、線上人數。
 
       roomSocket.on('setUserName', (userName,userId) => {
         users[roomSocket.id]={'spaceId':spaceId,'userName':userName,'userId':userId}
@@ -79,31 +79,7 @@ io.on('connection', (socket) => {
         myNamespace.in('badPeople').emit('badPeopleList',badName);
       });
 
-      // 此區為 出任務區：任務人選、任務成敗、同意票選
-
-      roomSocket.on('getFightButton', async(players) => {
-
-        const roomSocketIds = [];
-        players.forEach((player) => {
-          const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
-          const user = Object.values(roomUsers).find(user => user.userName === player);
-          const userId = user.userId;
-          if (userId) {roomSocketIds.push(userId);}
-        });
-        roomSocketIds.forEach(socketId => {
-          myNamespace.in(socketId).emit('fightButton', '霸托霸托');
-        });
-      });
-
-      roomSocket.on('getMissonResult', (userId,answer) => {
-        misson[userId]=answer
-        myNamespace.emit('getMissonResult',misson)
-      });
-
-      roomSocket.on('getVote', (userId,userName,answer) => {
-        vote[userId]={userName,answer}
-        myNamespace.emit('getVote',vote)
-      });
+      // 此區為 遊戲一區：確角等候、隊長列表、隊長提名、投票等候
 
       roomSocket.on('goGame', (userId,userName) => {
         goGame[userId]=userName
@@ -124,6 +100,32 @@ io.on('connection', (socket) => {
 
       });
 
+      roomSocket.on('missionRaise', (selectedList) => {
+        myNamespace.emit('missionRaise',selectedList)
+      });
+
+      roomSocket.on('getVote', (userId,userName,answer) => {
+        vote[userId]={userName,answer}
+        myNamespace.emit('getVote',vote)
+      });
+
+      roomSocket.on('getVoteResult', (obj) => {
+        myNamespace.emit('getVoteResult',obj)
+      });
+
+      roomSocket.on('getFightButton', async(players) => {
+
+        const roomSocketIds = [];
+        players.forEach((player) => {
+          const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
+          const user = Object.values(roomUsers).find(user => user.userName === player);
+          const userId = user.userId;
+          if (userId) {roomSocketIds.push(userId);}
+        });
+        roomSocketIds.forEach(socketId => {
+          myNamespace.in(socketId).emit('fightButton', '霸托霸托');
+        });
+      });
 
 
 
@@ -134,6 +136,19 @@ io.on('connection', (socket) => {
 
 
 
+
+
+      roomSocket.on('getMissonResult', (userId,answer) => {
+        misson[userId]=answer
+        myNamespace.emit('getMissonResult',misson)
+      });
+
+
+
+
+
+
+      // 離線清除區！
 
       roomSocket.on('disconnect',() => {
         delete users[roomSocket.id]
