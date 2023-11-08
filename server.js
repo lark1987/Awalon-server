@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
         myNamespace.emit('getVoteResult',obj)
       });
 
-      roomSocket.on('getFightButton', async(players) => {
+      roomSocket.on('goMission', (players) => {
 
         const roomSocketIds = [];
         players.forEach((player) => {
@@ -123,24 +123,14 @@ io.on('connection', (socket) => {
           if (userId) {roomSocketIds.push(userId);}
         });
         roomSocketIds.forEach(socketId => {
-          myNamespace.in(socketId).emit('fightButton', '霸托霸托');
+          myNamespace.in(socketId).emit('goMission', '出任務囉！');
         });
       });
-
-
-
-
-
-
-
-
-
-
-
 
       roomSocket.on('getMissonResult', (userId,answer) => {
         misson[userId]=answer
         myNamespace.emit('getMissonResult',misson)
+        console.log(misson)
       });
 
 
