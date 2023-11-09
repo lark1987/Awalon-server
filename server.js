@@ -100,6 +100,18 @@ io.on('connection', (socket) => {
 
       });
 
+      roomSocket.on('leaderAction', (leaderName) => {
+
+        console.log(leaderName)
+
+        const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
+        const leader = Object.values(roomUsers).find(user => user.userName === leaderName);
+        const leaderId = leader.userId;
+
+        myNamespace.in(leaderId).emit('leaderAction', '你是本局隊長喔');
+
+      });
+
       roomSocket.on('missionRaise', (selectedList) => {
         myNamespace.emit('missionRaise',selectedList)
       });
