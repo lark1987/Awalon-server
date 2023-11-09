@@ -112,8 +112,8 @@ io.on('connection', (socket) => {
 
       });
 
-      roomSocket.on('missionRaise', (selectedList) => {
-        myNamespace.emit('missionRaise',selectedList)
+      roomSocket.on('missionRaise', (selectedList,userName) => {
+        myNamespace.emit('missionRaise',selectedList,userName)
       });
 
       roomSocket.on('getVote', (userId,userName,answer) => {
@@ -143,6 +143,10 @@ io.on('connection', (socket) => {
         misson[userId]=answer
         myNamespace.emit('getMissonResult',misson)
         console.log(misson)
+      });
+
+      roomSocket.on('goNextGame', () => {
+        myNamespace.emit('goNextGame')
       });
 
 
