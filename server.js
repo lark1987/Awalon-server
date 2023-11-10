@@ -1,3 +1,20 @@
+
+const { initializeApp,  } = require('firebase/app');
+const { getFirestore, } = require('firebase/firestore');
+const  {addDoc,getDocs,collection,query,where } = require('firebase/firestore');
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAxqIh646KLtao8XnKfJc6Lk0P1V1CQzYc",
+  authDomain: "wehelpthree-lark1987.firebaseapp.com",
+  projectId: "wehelpthree-lark1987",
+  storageBucket: "wehelpthree-lark1987.appspot.com",
+  messagingSenderId: "716508795071",
+  appId: "1:716508795071:web:78297146c3ec13b083360a"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
@@ -19,9 +36,6 @@ app.get('/', (req, res) => {
 const users = {};
 const goodPeople = {};
 const badPeople = {}
-let vote = {}
-let misson = {}
-let goGame = {}
 
 
 io.on('connection', (socket) => {
@@ -34,6 +48,10 @@ io.on('connection', (socket) => {
 
     const myNamespace = io.of(`/${spaceId}`);
     myNamespace.on('connection', (roomSocket) => {
+
+      let vote = {}
+      let misson = {}
+      let goGame = {}
 
       // 此區處理 人員登記、線上人數。
 
@@ -166,6 +184,12 @@ io.on('connection', (socket) => {
         }
       });
 
+      // 處理中：這裡要做角色清單
+      roomSocket.on('roleList', () => {
+        const goods = Object.values(goodPeople).filter(user => user.spaceId === spaceId);
+        const bads = Object.values(badPeople).filter(user => user.spaceId === spaceId);
+      });
+
 
 
 
@@ -189,6 +213,13 @@ io.on('connection', (socket) => {
 
   });
 });
+
+
+const test = async() => { 
+  const roomName = 'qqq'
+  const roomPassword = 'qqq'
+  await addDoc (collection(db, "Awalon-room"),{roomName,roomPassword})
+ }
 
 
 
