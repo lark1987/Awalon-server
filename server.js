@@ -36,6 +36,9 @@ app.get('/', (req, res) => {
 const users = {};
 const goodPeople = {};
 const badPeople = {}
+let vote = {}
+let misson = {}
+let goGame = {}
 
 
 io.on('connection', (socket) => {
@@ -49,9 +52,7 @@ io.on('connection', (socket) => {
     const myNamespace = io.of(`/${spaceId}`);
     myNamespace.on('connection', (roomSocket) => {
 
-      let vote = {}
-      let misson = {}
-      let goGame = {}
+
 
       // 此區處理 人員登記、線上人數。
 
@@ -63,7 +64,6 @@ io.on('connection', (socket) => {
       roomSocket.on('getOnlineUsers',() => {
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
-        console.log('我是getOnlineUsers',users)
       })
 
       // 此區為 產生角色按鈕 > 好人壞人梅林 room > 通知壞人名單
@@ -213,13 +213,6 @@ io.on('connection', (socket) => {
 
   });
 });
-
-
-const test = async() => { 
-  const roomName = 'qqq'
-  const roomPassword = 'qqq'
-  await addDoc (collection(db, "Awalon-room"),{roomName,roomPassword})
- }
 
 
 
