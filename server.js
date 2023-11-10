@@ -22,7 +22,6 @@ const badPeople = {}
 let vote = {}
 let misson = {}
 let goGame = {}
-let gameLeaderCount = 0
 
 
 io.on('connection', (socket) => {
@@ -58,19 +57,25 @@ io.on('connection', (socket) => {
       roomSocket.on('joinGood', (userName) => {
         roomSocket.join('goodPeople');
         myNamespace.to('goodPeople').emit('groupMessage','歡迎加入好人陣營');
-        goodPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName}
+        goodPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName, 'role':'好人'}
       });
     
       roomSocket.on('joinBad', (userName) => {
         roomSocket.join('badPeople');
         myNamespace.to('badPeople').emit('groupMessage','歡迎加入壞人陣營');
-        badPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName}
+        badPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName, 'role':'壞人'}
       });
 
       roomSocket.on('joinMerlin', (userName) => {
         roomSocket.join('merlin');
         myNamespace.to('merlin').emit('groupMessage','歡迎加入好人陣營，你是梅林！');
-        goodPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName}
+        goodPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName, 'role':'梅林'}
+      });
+
+      roomSocket.on('joinAssassin', (userName) => {
+        roomSocket.join('assassin');
+        myNamespace.to('assassin').emit('groupMessage','歡迎加入壞人陣營，你是刺客！');
+        badPeople[roomSocket.id]={'spaceId':spaceId,'userName':userName, 'role':'刺客'}
       });
 
       roomSocket.on('getBadPeopleList', () => {
@@ -143,6 +148,22 @@ io.on('connection', (socket) => {
 
       roomSocket.on('goGameOver', (msg) => {
         myNamespace.emit('goGameOver',msg)
+      });
+
+      roomSocket.on('goAssassin', () => {
+        myNamespace.to('assassin').emit('goAssassin');
+      });
+
+      roomSocket.on('assassinChoose', (chooseName) => {
+        const goods = Object.values(goodPeople).filter(user => user.spaceId === spaceId);
+        const user = Object.values(goods).find(user => user.role === '梅林');
+        const merlinName = user.userName;
+        if (chooseName == merlinName){
+          myNamespace.emit('goGameOver','刺殺成功，壞人陣營獲勝！');
+        }
+        else if (chooseName !== merlinName){
+          myNamespace.emit('goGameOver','刺殺失敗，好人陣營獲勝！');
+        }
       });
 
 
