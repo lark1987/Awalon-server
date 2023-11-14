@@ -142,6 +142,7 @@ io.on('connection', (socket) => {
       });
 
       roomSocket.on('goMission', (players) => {
+        myNamespace.emit('goMissionWait')
 
         const roomSocketIds = [];
         players.forEach((player) => {
@@ -153,6 +154,7 @@ io.on('connection', (socket) => {
         roomSocketIds.forEach(socketId => {
           myNamespace.in(socketId).emit('goMission', '出任務囉！');
         });
+
       });
 
       roomSocket.on('getMissonResult', (userId,answer) => {
