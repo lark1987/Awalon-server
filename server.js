@@ -37,7 +37,7 @@ const users = {};
 const goodPeople = {};
 const badPeople = {}
 let vote = {}
-let misson = {}
+let mission = {}
 let goGame = {}
 
 
@@ -132,9 +132,10 @@ io.on('connection', (socket) => {
         myNamespace.emit('missionRaise',selectedList,userName)
       });
 
-      roomSocket.on('getVote', (userId,userName,answer) => {
-        vote[userId]={userName,answer}
-        myNamespace.emit('getVote',vote)
+      roomSocket.on('getVote', (userId,userName,answer,roomId) => {
+        vote[userId]={userName,answer,roomId}
+        const roomVote = Object.values(vote).filter(item => item.roomId === roomId);
+        myNamespace.emit('getVote',roomVote)
       });
 
       roomSocket.on('getVoteResult', (obj) => {
@@ -157,9 +158,10 @@ io.on('connection', (socket) => {
 
       });
 
-      roomSocket.on('getMissonResult', (userId,answer) => {
-        misson[userId]=answer
-        myNamespace.emit('getMissonResult',misson)
+      roomSocket.on('getMissionResult', (userId,answer,roomId) => {
+        mission[userId]={answer,roomId}
+        const roomMission = Object.values(mission).filter(item => item.roomId === roomId);
+        myNamespace.emit('getMissionResult',roomMission)
       });
 
       roomSocket.on('goNextGame', () => {
@@ -204,7 +206,7 @@ io.on('connection', (socket) => {
         delete goodPeople[roomSocket.id]
         delete badPeople[roomSocket.id]
         vote = {}
-        misson = {}
+        mission = {}
         goGame = {}
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
