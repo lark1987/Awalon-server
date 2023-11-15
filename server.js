@@ -104,9 +104,12 @@ io.on('connection', (socket) => {
 
       // 此區為 遊戲一區：確角等候、隊長列表、隊長提名、投票等候
 
-      roomSocket.on('goGame', (userId,userName) => {
-        goGame[userId]=userName
-        myNamespace.emit('goGame',goGame)
+      roomSocket.on('goGame', (userId,userName,roomId) => {
+
+        goGame[userId]={userName,roomId}
+        const roomGoGame = Object.values(goGame).filter(item => item.roomId === roomId);
+        myNamespace.emit('goGame',roomGoGame)
+
       });
 
       roomSocket.on('leaderList', (shuffleList) => {
@@ -205,12 +208,27 @@ io.on('connection', (socket) => {
         delete users[roomSocket.id]
         delete goodPeople[roomSocket.id]
         delete badPeople[roomSocket.id]
-        vote = {}
-        mission = {}
-        goGame = {}
+
+        for (let voteId in vote) {
+          if (vote[voteId].roomId === spaceId) {
+            delete vote[voteId];
+          }
+        }
+
+        for (let missionId in mission) {
+          if (mission[missionId].roomId === spaceId) {
+            delete mission[missionId];
+          }
+        }
+
+        for (let goGameId in goGame) {
+          if (goGame[goGameId].roomId === spaceId) {
+            delete goGame[goGameId];
+          }
+        }
+
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
-        myNamespace.emit('goGame',goGame)
       })
 
     });
