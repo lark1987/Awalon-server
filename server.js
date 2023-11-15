@@ -36,12 +36,30 @@ app.get('/', (req, res) => {
 const users = {};
 const goodPeople = {};
 const badPeople = {}
+
+let goGame = {}
 let vote = {}
 let mission = {}
-let goGame = {}
+
+const roomClose = {}
+
 
 
 io.on('connection', (socket) => {
+
+  socket.on('roomCheck', (roomId,userName) => {
+    if (roomId in roomClose) {
+      socket.emit('roomCheck','遊戲中，無法進入')
+      return
+    }
+    const roomUsers = Object.values(users).filter(user => user.spaceId === roomId);
+    const isNamed = roomUsers.some(item => item.userName === userName);
+    if(isNamed){
+      socket.emit('roomCheck','玩家名稱已被使用')
+      return
+    }
+    socket.emit('roomCheck',false)
+  })
 
   // 此區為連線 socket 取得 spaceId
 
@@ -66,9 +84,10 @@ io.on('connection', (socket) => {
         myNamespace.emit('onlineUsers',roomUsers)
       })
 
-      // 此區為 產生角色按鈕 > 好人壞人梅林 room > 通知壞人名單
+      // 此區為 產生角色按鈕+房間關閉 > 好人壞人梅林 room > 通知壞人名單
 
       roomSocket.on('getRoleButton', (newList) => {
+        roomClose[spaceId]={'roomId':spaceId}
         myNamespace.emit('roleButton',newList)
       });
 
@@ -186,7 +205,7 @@ io.on('connection', (socket) => {
         if (chooseName == merlinName){
           myNamespace.emit('goGameOver','刺殺成功，壞人陣營獲勝！');
         }
-        else if (chooseName !== merlinName){
+        if (chooseName !== merlinName){
           myNamespace.emit('goGameOver','刺殺失敗，好人陣營獲勝！');
         }
       });
@@ -226,6 +245,14 @@ io.on('connection', (socket) => {
             delete goGame[goGameId];
           }
         }
+
+        for (let roomCloseId in roomClose) {
+          if (roomClose[roomCloseId].roomId === spaceId) {
+            delete roomClose[roomCloseId];
+            myNamespace.emit('goGameOver','玩家離線，遊戲中止')
+          }
+            
+          }
 
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
