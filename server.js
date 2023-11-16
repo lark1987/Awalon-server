@@ -6,13 +6,6 @@ const cors = require('cors');
 
 const app = express();
 
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', ''); 
-//   res.header('Access-Control-Allow-Methods', '*');
-//   res.header('Access-Control-Allow-Headers', '');
-//   next();
-// });
-
 const options = {
   origin: 'https://awalon.vercel.app',
   methods: '*',
@@ -21,8 +14,6 @@ const options = {
 };
 
 app.use(cors(options));
-
-// app.use(cors());
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
