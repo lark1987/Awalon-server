@@ -197,6 +197,14 @@ io.on('connection', (socket) => {
         }
       });
 
+      roomSocket.on('roomOpen', () => {
+        for (let roomCloseId in roomClose) {
+          if (roomClose[roomCloseId].roomId === spaceId) {
+            delete roomClose[roomCloseId];
+          }
+        }
+      });
+
       // 處理中：這裡要做角色清單
       roomSocket.on('roleList', () => {
         const goods = Object.values(goodPeople).filter(user => user.spaceId === spaceId);
@@ -232,12 +240,6 @@ io.on('connection', (socket) => {
             delete goGame[goGameId];
           }
         }
-
-        for (let roomCloseId in roomClose) {
-          if (roomClose[roomCloseId].roomId === spaceId) {
-            delete roomClose[roomCloseId];
-          }
-          }
 
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
