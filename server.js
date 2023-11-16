@@ -2,18 +2,20 @@
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://awalon.vercel.app",
     credentials: true
   }
-});
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
 });
 
 
