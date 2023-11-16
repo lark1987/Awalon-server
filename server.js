@@ -13,7 +13,16 @@ const app = express();
 //   next();
 // });
 
-app.use(cors());
+const options = {
+  origin: '*',
+  methods: '*',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+app.use(cors(options));
+
+// app.use(cors());
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
