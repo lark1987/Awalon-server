@@ -2,12 +2,6 @@
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
-const cors = require("cors");
-
-const corsOptions = {
-  origin: ["https://awalon.vercel.app"],
-  credentials: true
-};
 
 const app = express();
 const server = http.createServer(app);
@@ -18,16 +12,6 @@ const io = new Server(server, {
     credentials: true
   }
 });
-
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://awalon.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, awalon");
-  res.header("Access-Control-Allow-Credentials", true);
-  res.status(200).end();
-});
-
-app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
