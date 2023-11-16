@@ -14,7 +14,7 @@ const app = express();
 // });
 
 const options = {
-  origin: '*',
+  origin: 'https://awalon.vercel.app',
   methods: '*',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
