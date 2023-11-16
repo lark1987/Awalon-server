@@ -1,20 +1,4 @@
 
-const { initializeApp,  } = require('firebase/app');
-const { getFirestore, } = require('firebase/firestore');
-const  {addDoc,getDocs,collection,query,where } = require('firebase/firestore');
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAxqIh646KLtao8XnKfJc6Lk0P1V1CQzYc",
-  authDomain: "wehelpthree-lark1987.firebaseapp.com",
-  projectId: "wehelpthree-lark1987",
-  storageBucket: "wehelpthree-lark1987.appspot.com",
-  messagingSenderId: "716508795071",
-  appId: "1:716508795071:web:78297146c3ec13b083360a"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
@@ -37,15 +21,17 @@ const users = {};
 const goodPeople = {};
 const badPeople = {}
 
-let goGame = {}
-let vote = {}
-let mission = {}
+const goGame = {}
+const vote = {}
+const mission = {}
 
 const roomClose = {}
 
 
 
 io.on('connection', (socket) => {
+
+    // 此區為連線 socket，進房確認、提供spaceId
 
   socket.on('roomCheck', (roomId,userName) => {
     if (roomId in roomClose) {
@@ -61,15 +47,12 @@ io.on('connection', (socket) => {
     socket.emit('roomCheck',false)
   })
 
-  // 此區為連線 socket 取得 spaceId
-
   socket.on('spaceId', (spaceId) => {
     console.log('我是spaceId',spaceId)
-    socket.emit('answer','收到spaceId了！')
+    socket.emit('spaceId')
 
     const myNamespace = io.of(`/${spaceId}`);
     myNamespace.on('connection', (roomSocket) => {
-
 
 
       // 此區處理 人員登記、線上人數。
@@ -84,10 +67,14 @@ io.on('connection', (socket) => {
         myNamespace.emit('onlineUsers',roomUsers)
       })
 
-      // 此區為 產生角色按鈕+房間關閉 > 好人壞人梅林 room > 通知壞人名單
+      // 此區為 產生角色按鈕+房間關閉 > 角色room > 壞人名單
+
+      roomSocket.on('userNumber', (userNumber) => {
+        myNamespace.emit('userNumber',userNumber);
+        roomClose[spaceId]={'roomId':spaceId};
+      });
 
       roomSocket.on('getRoleButton', (newList) => {
-        roomClose[spaceId]={'roomId':spaceId}
         myNamespace.emit('roleButton',newList)
       });
 
@@ -223,7 +210,7 @@ io.on('connection', (socket) => {
 
       // 離線清除區！
 
-      roomSocket.on('disconnect',() => {
+      roomSocket.on('disconnect',(reason) => {
         delete users[roomSocket.id]
         delete goodPeople[roomSocket.id]
         delete badPeople[roomSocket.id]
@@ -249,13 +236,16 @@ io.on('connection', (socket) => {
         for (let roomCloseId in roomClose) {
           if (roomClose[roomCloseId].roomId === spaceId) {
             delete roomClose[roomCloseId];
-            myNamespace.emit('goGameOver','玩家離線，遊戲中止')
           }
-            
           }
 
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         myNamespace.emit('onlineUsers',roomUsers)
+
+
+
+
+        // roomSocket.removeAllListeners()
       })
 
     });
@@ -268,3 +258,11 @@ io.on('connection', (socket) => {
 server.listen(4000, () => {
   console.log('伺服器運行在 http://localhost:4000');
 });
+
+
+
+// const filteredGoGame = Object.values(goGame).filter(item => item.roomId === spaceId);
+// const filteredUsers = Object.values(users).filter(item => item.spaceId === spaceId);
+// if(filteredGoGame.length !== filteredUsers.length){
+//   myNamespace.emit('goGameOver','玩家離線，遊戲中止')
+// }
