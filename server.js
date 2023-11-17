@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://awalon.vercel.app",
     credentials: true
   }
 });
@@ -268,8 +268,8 @@ io.on('connection', (socket) => {
 
 
 
-server.listen(4000, () => {
-  console.log('伺服器運行在 http://localhost:4000');
+server.listen(3000, () => {
+  console.log('伺服器運行在 http://localhost:3000');
 });
 
 
