@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://15.168.102.124:3000/",
     // origin: "https://awalon.vercel.app",
     credentials: true
   }
