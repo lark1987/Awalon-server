@@ -2,18 +2,18 @@
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
-const cors = require('cors');
+// const cors = require('cors');
 
 const app = express();
 
-const options = {
-  origin: 'https://awalon.vercel.app',
-  methods: '*',
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
+// const options = {
+//   origin: 'https://awalon.vercel.app',
+//   methods: '*',
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+// };
 
-app.use(cors(options));
+// app.use(cors(options));
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://awalon.vercel.app",
+    origin: "http://localhost:3000",
     credentials: true
   }
 });
