@@ -7,7 +7,9 @@ const cors = require('cors');
 const app = express();
 
 const options = {
-  origin: "http://15.168.102.124:3000",
+  // origin: "http://15.168.102.124:3000",
+  origin: "https://awalon.vercel.app/",
+  // origin: "http://localhost:3000",
   methods: '*',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -22,8 +24,9 @@ app.get('/', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://15.168.102.124:3000",
-    // origin: "https://awalon.vercel.app",
+    // origin: "http://15.168.102.124:3000",
+    origin: "https://awalon.vercel.app/",
+    // origin: "http://localhost:3000",
     credentials: true
   }
 });
@@ -272,11 +275,3 @@ io.on('connection', (socket) => {
 server.listen(4000, () => {
   console.log('伺服器運行在 http://localhost:4000');
 });
-
-
-
-// const filteredGoGame = Object.values(goGame).filter(item => item.roomId === spaceId);
-// const filteredUsers = Object.values(users).filter(item => item.spaceId === spaceId);
-// if(filteredGoGame.length !== filteredUsers.length){
-//   myNamespace.emit('goGameOver','玩家離線，遊戲中止')
-// }
