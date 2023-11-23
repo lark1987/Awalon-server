@@ -8,8 +8,8 @@ const app = express();
 
 const options = {
   // origin: "http://15.168.102.124:3000",
-  origin: "https://awalon.vercel.app",
-  // origin: "http://localhost:3000",
+  // origin: "https://awalon.vercel.app",
+  origin: "http://localhost:3000",
   methods: '*',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -25,8 +25,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     // origin: "http://15.168.102.124:3000",
-    origin: "https://awalon.vercel.app",
-    // origin: "http://localhost:3000",
+    // origin: "https://awalon.vercel.app",
+    origin: "http://localhost:3000",
     credentials: true
   }
 });
@@ -54,6 +54,10 @@ io.on('connection', (socket) => {
       return
     }
     const roomUsers = Object.values(users).filter(user => user.spaceId === roomId);
+    if(roomUsers.length > 9){
+      socket.emit('roomCheck','房間人數已滿')
+      return
+    }
     const isNamed = roomUsers.some(item => item.userName === userName);
     if(isNamed){
       socket.emit('roomCheck','玩家名稱已被使用')
@@ -63,7 +67,6 @@ io.on('connection', (socket) => {
   })
 
   socket.on('spaceId', (spaceId) => {
-    console.log('我是spaceId',spaceId)
     socket.emit('spaceId')
 
     const myNamespace = io.of(`/${spaceId}`);
@@ -187,6 +190,12 @@ io.on('connection', (socket) => {
         const roomMission = Object.values(mission).filter(item => item.roomId === roomId);
         myNamespace.emit('getMissionResult',roomMission)
       });
+
+      roomSocket.on('getMissionFinalResult', (msg) => {
+        myNamespace.emit('getMissionFinalResult',msg)
+      });
+
+
 
       roomSocket.on('goNextGame', () => {
         myNamespace.emit('goNextGame')
