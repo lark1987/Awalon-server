@@ -138,20 +138,13 @@ io.on('connection', (socket) => {
 
       roomSocket.on('leaderList', (shuffleList) => {
         myNamespace.emit('leaderList',shuffleList)
-
-        const leaderName = shuffleList[0]
-        const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
-        const leader = Object.values(roomUsers).find(user => user.userName === leaderName);
-        const leaderId = leader.userId;
-
-        myNamespace.in(leaderId).emit('leaderAction', '你是本局隊長喔');
-
       });
 
       roomSocket.on('leaderAction', (leaderName) => {
         const roomUsers = Object.values(users).filter(user => user.spaceId === spaceId);
         const leader = Object.values(roomUsers).find(user => user.userName === leaderName);
         const leaderId = leader.userId;
+        myNamespace.emit('goLeaderWait',leaderName)
         myNamespace.in(leaderId).emit('leaderAction', '你是本局隊長喔');
       });
 
