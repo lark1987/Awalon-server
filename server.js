@@ -184,8 +184,8 @@ io.on('connection', (socket) => {
         myNamespace.emit('getMissionResult',roomMission)
       });
 
-      roomSocket.on('getMissionFinalResult', (msg) => {
-        myNamespace.emit('getMissionFinalResult',msg)
+      roomSocket.on('getMissionFinalResult', (msg,failCount) => {
+        myNamespace.emit('getMissionFinalResult',msg,failCount)
       });
 
 
