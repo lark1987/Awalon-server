@@ -7,9 +7,8 @@ const cors = require('cors');
 const app = express();
 
 const options = {
-  // origin: "http://15.168.102.124:3000",
-  // origin: "https://awalon.vercel.app",
-  origin: "http://localhost:3000",
+  origin: "https://awalon.vercel.app",
+  // origin: "http://localhost:3000",
   methods: '*',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -24,9 +23,8 @@ app.get('/', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    // origin: "http://15.168.102.124:3000",
-    // origin: "https://awalon.vercel.app",
-    origin: "http://localhost:3000",
+    origin: "https://awalon.vercel.app",
+    // origin: "http://localhost:3000",
     credentials: true
   }
 });
