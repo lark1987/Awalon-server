@@ -7,7 +7,8 @@ const cors = require('cors');
 const app = express();
 
 const options = {
-  origin: "https://awalon.vercel.app",
+  origin: ["https://awalon.vercel.app","http://localhost:3000"],
+  // origin: "https://awalon.vercel.app",
   // origin: "http://localhost:3000",
   methods: '*',
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -23,7 +24,8 @@ app.get('/', (req, res) => {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://awalon.vercel.app",
+    origin: ["https://awalon.vercel.app","http://localhost:3000"],
+    // origin: "https://awalon.vercel.app",
     // origin: "http://localhost:3000",
     credentials: true
   }
@@ -224,6 +226,7 @@ io.on('connection', (socket) => {
       roomSocket.on('roleList', () => {
         const goods = Object.values(goodPeople).filter(user => user.spaceId === spaceId);
         const bads = Object.values(badPeople).filter(user => user.spaceId === spaceId);
+        myNamespace.emit('roleList',goods,bads)
       });
 
 
