@@ -220,6 +220,16 @@ io.on('connection', (socket) => {
             delete roomClose[roomCloseId];
           }
         }
+        for (let good in goodPeople) {
+          if (goodPeople[good].spaceId === spaceId) {
+            delete goodPeople[good];
+          }
+        }
+        for (let bad in badPeople) {
+          if (badPeople[bad].spaceId === spaceId) {
+            delete badPeople[bad];
+          }
+        }
       });
 
       // 處理中：這裡要做角色清單
@@ -240,6 +250,17 @@ io.on('connection', (socket) => {
         delete users[roomSocket.id]
         delete goodPeople[roomSocket.id]
         delete badPeople[roomSocket.id]
+
+        for (let good in goodPeople) {
+          if (goodPeople[good].spaceId === spaceId) {
+            delete goodPeople[good];
+          }
+        }
+        for (let bad in badPeople) {
+          if (badPeople[bad].spaceId === spaceId) {
+            delete badPeople[bad];
+          }
+        }
 
         for (let voteId in vote) {
           if (vote[voteId].roomId === spaceId) {
