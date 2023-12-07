@@ -251,16 +251,16 @@ io.on('connection', (socket) => {
         delete goodPeople[roomSocket.id]
         delete badPeople[roomSocket.id]
 
-        for (let good in goodPeople) {
-          if (goodPeople[good].spaceId === spaceId) {
-            delete goodPeople[good];
-          }
-        }
-        for (let bad in badPeople) {
-          if (badPeople[bad].spaceId === spaceId) {
-            delete badPeople[bad];
-          }
-        }
+        // for (let good in goodPeople) {
+        //   if (goodPeople[good].spaceId === spaceId) {
+        //     delete goodPeople[good];
+        //   }
+        // }
+        // for (let bad in badPeople) {
+        //   if (badPeople[bad].spaceId === spaceId) {
+        //     delete badPeople[bad];
+        //   }
+        // }
 
         for (let voteId in vote) {
           if (vote[voteId].roomId === spaceId) {
